@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CarNowControl</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="accessibility_description">Allows Google Now commands to be sent as text to a cars media center.</string>
+</resources>
