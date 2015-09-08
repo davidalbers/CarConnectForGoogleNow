@@ -6,3 +6,5 @@ This app was made for people who connect their phones to their car stereo via Bl
 It uses AccessibilityServices and Bluetooth AVRCP.
 
 A lot of code for AVRCP came from another open source app called [Botifier](https://github.com/grimpy/Botifier "Botifier GitHub"). 
+
+This is a work in progress.
