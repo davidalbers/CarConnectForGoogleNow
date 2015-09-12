@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.media.MediaMetadata;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -28,7 +29,7 @@ public class CarControlNowAccessibilityService extends AccessibilityService {
     private AudioManager audioManager;
     private long lastRewindPressTime;
     private int maxShortcutInterval = 1000;
-
+    private PowerManager.WakeLock wl;
     public static boolean isAccessibilitySettingsOn(Context mContext) {
         int accessibilityEnabled = 0;
         final String service = "com.RSen.Commandr/com.RSen.Commandr.core.MyAccessibilityService";
@@ -78,10 +79,15 @@ public class CarControlNowAccessibilityService extends AccessibilityService {
             //go back to setup activity after enabling
         }
 
+        //required to send text over AVRCP
         mediaSession = new MediaSession(this, "CarControlNow");
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         setUpCallBack();
         setMediaSessionState();
+
+        //This is deprecated but there is no other way to get screen on from a service
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "CarControlNow");
     }
 
     @Override
@@ -120,6 +126,7 @@ public class CarControlNowAccessibilityService extends AccessibilityService {
             String command = accessibilityNodeInfoRecursion(ani);
             if (command!=null) {
                 Log.d("command", command);
+                wl.release();
                 sendTextOverAVRCP(command);
             }
         } catch (Exception e) {
@@ -233,6 +240,12 @@ public class CarControlNowAccessibilityService extends AccessibilityService {
      */
     private void checkShortcut() {
         if( (System.currentTimeMillis() - lastRewindPressTime) < maxShortcutInterval) {
+
+            //wakes up the device if it was asleep
+            wl.acquire();
+            wl.release();
+            Log.d(TAG, "Got shortcut" + wl.isHeld());
+
             initiateGoogleNow();
         }
     }
