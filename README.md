@@ -10,6 +10,7 @@ A lot of code for AVRCP came from another open source app called [Botifier](http
 This is a work in progress.
 
 TODO:
-* Leave screen unlocked while driving (otherwise the service isn't listening)
 * Build settings screen
 * Add options for other key shortcuts
+* Add some way to keep screen unlocked for people who use passcodes/patterns on their lock screen
+* Only accept shortcuts when driving and/or connected to a specific bluetooth device

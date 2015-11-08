@@ -1,6 +1,7 @@
 package edu.dalbers.carnowcontrol;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.KeyguardManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -244,6 +246,11 @@ public class CarControlNowAccessibilityService extends AccessibilityService {
             //wakes up the device if it was asleep
             wl.acquire();
             wl.release();
+            WindowManager window = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+
+            KeyguardManager keyguardManager = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
+            keyguardManager.newKeyguardLock("TAG").disableKeyguard();
+
             Log.d(TAG, "Got shortcut" + wl.isHeld());
 
             initiateGoogleNow();
@@ -251,7 +258,8 @@ public class CarControlNowAccessibilityService extends AccessibilityService {
     }
 
     /**
-     * Start google now activity. This will take you to the homescreen and start listening.
+     * Start google now activity. This will take you to the homescreen and start listening if the phone is unlocked.
+     * If the phone is locked, it is hopefully awake and google now will listen from the lock screen.
      */
     private void initiateGoogleNow() {
 
